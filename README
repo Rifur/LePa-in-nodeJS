@@ -1,2 +1,42 @@
-LePa in nodeJS
-=======
+LePa in nodeJS: An simple lexer and parser in nodejs
+[DIY Compiler Front End - prototype]
+author: Rifur Ni, <Rifurdoma at gmail.com>
+
+This project is running on node.js.
+Usage: $nodejs main.js <source-code>
+
+For example, we have test.js, contains very simple statements, can be parsed by those production rules:
+
+	start	: VAR assign_form SEMICOLON
+			;
+	
+	assign_form	: IDENTIFIER assign_list 
+				| IDENTIFIER ASSIGN TYPE assign_list 
+				;
+		
+	assign_list	: COMMA assign_form
+				;
+	
+which is implemented in parser.js.
+
+The main.js is the entry of program. It read in <source-code> file as string given by argument, and send <source-code> into lexical analyzer by lex.input() method:
+
+	 var lex = require('./lex.js');
+		// ...
+	>lex.input(<source-code>);
+
+where lex.js is the implementation of lexical analyzer. Now, running syntax anaylzer:
+
+	 var lex = require('./lex.js');
+	 var parser = require('./parser.js');	
+		// ...
+	 lex.input(<source-code>);
+	>parser.parse();
+
+Tokes and their regular expression are defined in token.js. In default, if we just want to run lexical analyzer to check whether the definitions of tokens are correct or not, we use
+
+	 lex.input(<source-code>);
+	>lex.lex();
+
+to do it. 
+Have fun :D

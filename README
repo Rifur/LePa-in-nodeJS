@@ -8,14 +8,14 @@ Usage: $nodejs main.js <source-code>
 For example, we have test.js, contains very simple statements, can be parsed by those production rules:
 
 	start	: VAR assign_form SEMICOLON
-			;
+		;
 
 	assign_form	: IDENTIFIER assign_list
-				| IDENTIFIER ASSIGN TYPE assign_list
-				;
+			| IDENTIFIER ASSIGN TYPE assign_list
+			;
 
 	assign_list	: COMMA assign_form
-				;
+			;
 
 which is implemented in parser.js.
 

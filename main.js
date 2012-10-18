@@ -5,7 +5,7 @@ var fs = require("fs"),
 
 	print = console.log,
 
-	srcCodeNum = -2,	// first two arguments are nodejs and main.js
+	srcCodeNum = -2,
 	srcCode = new Array();
 
 

@@ -2,18 +2,32 @@ var show = function (x) { console.log(x + " Here!"); };
 
 module.exports = {
 	tokens : {
+
+
 		'VAR' : "var", 
 		'ASSIGN' : "=", 
 		'PL' : "\\(", 
 		'PR' : "\\)", 
+
+		'LBRACE' : "{",
+		'RBRACE' : "}",
 		
 		'NULL' : 'NULL',
 
 		'SEMICOLON' : ';',
 		'COMMA' : ',',
+		'COLON' : ':',
+		'PERIOD' : '\\.',
 		
 		'NUMBER' : '\\d+',
-		'IDENTIFIER' : "\\w+"
+	/*	'IDENTIFIER' : "\\w+",*/
+
+
+		'TOKEN_REGION' : "%token",
+		'TOKEN_NAME' : "\\w+",
+		'TOKEN_REGULAR' : '/[^/]*/'
+
+
 	},
 
 	ignore : {

@@ -12,7 +12,7 @@ var text = '';
 
 module.exports = {
 
-	pattern : {	},
+	pattern : { },
 	linenum : { },
 
 	input : function (src) {
@@ -56,19 +56,14 @@ module.exports = {
 
 		self._ignore();
 
-		if(text == '') {
-			return;	// end of text
-		}
-
 		for(self.pattern in token.tokens) {
 			d = String(text.match("^" + token.tokens[self.pattern]));
-
 			if(d != 'null') {
 				return d;	// match
 			}
 		}
 
-		error_msg();
+		return '';
 	},
 
 

@@ -15,17 +15,76 @@ module.exports = {
 	}
 };
 
+function expect(symbol) {
+	if(symbol()) {
+		return true;
+	}
+	error_msg();
+	return false;
+}
+
 function error_msg() {
 	console.log("line " + lex.linenum + " : syntax error");
-	process.exit();
+	//process.exit();
 }
 
 function start() {
-	declare();
+	token_region();
+	/*declare();*/
+}
+
+function token_region() {
+	var d = lex._scan();
+	switch(lex.pattern) {
+		case 'TOKEN_REGION':
+			console.log("TOKEN_REGION");
+			lex._next(d);
+
+			expect(LBRACE);
+
+			do {
+				token_name();
+				expect(COLON);
+				token_regular();
+			} while(COMMA());
+			
+			expect(RBRACE);
+
+			
+
+			console.log("XD");
+		break;
+	}
+}
+
+function token_name() {
+	var d = lex._scan();
+
+	switch(lex.pattern) {
+		case 'TOKEN_NAME':
+			console.log("TOKEN_NAME");
+			lex._next(d);
+		break;
+	}
+
+	return true;
+}
+
+function token_regular() {
+	var d = lex._scan();
+	switch(lex.pattern) {
+		case 'TOKEN_REGULAR':console.log(d);
+			console.log("TOKEN_REGULAR");
+			lex._next(d);
+		break;
+	}
+
+	return true;
 }
 
 function declare() {
 	var d = lex._scan();
+	console.log(d);
 	switch(lex.pattern) {
 		case 'VAR':
 			VAR(); assign_form(); SEMICOLON();
@@ -150,24 +209,57 @@ function NULL(t) {
 	error_msg();
 }
 
-function SEMICOLON(t) {
+function SEMICOLON() {
 	var d = lex._scan();
 	if(lex.pattern == 'SEMICOLON') {
 		console.log('SEMICOLON');
 		lex._next(d);
-		return;
+		return true;
 	}
 
-	error_msg();
+	return false;
 }
 
-function COMMA(t) {
-	var d = lex._scan();
+function COMMA() {
+	var d = lex._scan(); 
 	if(lex.pattern == 'COMMA') {
 		console.log('COMMA');
 		lex._next(d);
-		return;
+		return true;
 	}
 
-	error_msg();	
+	return false;	
+}
+
+function COLON() {
+	var d = lex._scan(); 
+	if(lex.pattern == 'COLON') {
+		console.log('COLON');
+		lex._next(d);
+		return true;
+	}
+
+	return false;	
+}
+
+function LBRACE() {
+	var d = lex._scan();
+	if(lex.pattern == 'LBRACE') {
+		console.log('LBRACE');
+		lex._next(d);
+		return true;
+	}
+
+	return false;	
+}
+
+function RBRACE() {
+	var d = lex._scan();
+	if(lex.pattern == 'RBRACE') {
+		console.log('RBRACE');
+		lex._next(d);
+		return true;
+	}
+
+	return false;	
 }

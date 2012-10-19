@@ -8,7 +8,6 @@ function error_msg() {
 }
 
 var text = '';
-//var pattern;
 
 module.exports = {
 
@@ -18,6 +17,7 @@ module.exports = {
 	input : function (src) {
 		var self = this;
 		self.linenum = 1;
+		self.currentTokenLength = 0;
 		text = src;
 	},
 
@@ -32,11 +32,11 @@ module.exports = {
 			return;	// end of text
 		}
 
-		d = self._scan();
+		d = self.lookahead();
 
 		if(d != '') {
 			eval("token." + self.pattern + "(d)");
-			self._next(d);
+			self.nextToken(d);
 			process.nextTick(function () { self.lex(); });
 
 		} else {
@@ -45,12 +45,14 @@ module.exports = {
 	},
 
 
-	_next : function (d) {
-		text = text.substr(d.length);
+	nextToken : function () {
+		var self = this;
+		text = text.substr(self.currentTokenLength);
+		self.currentTokenLength = 0;
 	},
 
 
-	_scan : function () {
+	lookahead : function () {
 		var self = this;
 		var d = '';
 
@@ -59,6 +61,7 @@ module.exports = {
 		for(self.pattern in token.tokens) {
 			d = String(text.match("^" + token.tokens[self.pattern]));
 			if(d != 'null') {
+				self.currentTokenLength = d.length;
 				return d;	// match
 			}
 		}
@@ -76,10 +79,12 @@ module.exports = {
 			if(d == 'null') {
 				return;
 			}
-			if(d == '\n') {
-				self.linenum += 1;
-			}
-			self._next(d);
+
+			self.currentTokenLength = d.length;
+			if(d.match('\n')) {
+				self.linenum += d.match(/\n/g).length;
+			} 
+			self.nextToken();
 		}
 
 		process.nextTick(function () { self._ignore(); });

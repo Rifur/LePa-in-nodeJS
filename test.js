@@ -1,16 +1,29 @@
 %token 
 {
-	XDD: /XDD/, 
-	NANI : /NANI/
-}
+	IDENTIFIER : /\w+/	,
+	TOKEN_REGULAR : //.*//	,
+	TERMINAL : /"\S+"/	,
+	NONTERMINAL : /<\w+>/	,
+	ALTER : /|/		,
+	EPSILON : /ε/
+}	
 
 %grammar
 {
 
-<start> : <expression> <haha>;
-<expression> : <var> <nani>;
+<start> : <token_region> <bnf_region> ;
+<token_region> : "%token" "{" [<token_expression>] "}" | ε ;
+<token_expression> :  <token_name> ":" <token_regular> ["," <token_expression>];
+<token_name> : "IDENTIFIER" ;
+<token_regular> : "TOKEN_REGULAR" ;
+
+<bnf_region> : "%grammar" "{" [<bnf_expression>] "}" | ε ;
+<bnf_expression> : <nonterminal> ":" <bnf_rule> ";" ;
+<bnf_rule> : <bnf_element> <bnf_zeroOrMore> <bnf_rule> | ε ;
+<bnf_element> : <nonterminal> | <terminal> | "ALTER" | "EPSILON" ;
+<bnf_zeroOrMore> : "[" <bnf_element> "]" | ε ;
+
+<terminal> : "TERMINAL" ;
+<nonterminal> : "NONTERMINAL";
 
 }
-
-var a = NULL;
-var b = 123, b = 321;

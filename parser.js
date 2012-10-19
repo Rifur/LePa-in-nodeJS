@@ -15,8 +15,14 @@ module.exports = {
 	}
 };
 
+function error_msg() {
+	console.log("line " + lex.linenum + " : syntax error");
+	process.exit();
+}
+
 function expect(symbol) {
 	if(symbol()) {
+		lex.nextToken();
 		return true;
 	} else {
 		error_msg();
@@ -26,124 +32,180 @@ function expect(symbol) {
 
 function accept(symbol) {
 	if(symbol()) {
+		lex.nextToken();
 		return true;
 	} else {
 		return false;	
 	}
 }
 
-function error_msg() {
-	console.log("line " + lex.linenum + " : syntax error");
-	process.exit();
-}
-
+/*	SYNTEX	*/
 function start() {
 	token_region();
 	bnf_region();
 }
 
-function bnf_region() {
-	var d = lex._scan();
-	switch(lex.pattern) {
-		case 'GRAMMAR_REGION':
-			console.log("symbol" + d);
-			lex._next(d);
-			
-			expect(LBRACE);
-			
-			do {
-				bnf_expression();
-
-			} while(!accept(RBRACE));
-			
-		break;
-	}
-}
-
-function bnf_expression() {
-	var d = lex._scan();console.log(lex.pattern);
-	switch(lex.pattern) {
-		case 'NONTERMINAL' : 
-			console.log("symbol: " + d);
-			lex._next(d);
-			
-			expect(COLON);
-			
-			do {
-				bnf_rule();
-			} while(!accept(SEMICOLON));
-			
-		break;
-	}
-}
-
-function bnf_rule() {
-	var d = lex._scan();
-	switch(lex.pattern) {
-		case 'NONTERMINAL':
-			console.log("nonterminal" + d);
-			lex._next(d);
-		break;
-		case 'TERMINAL' :
-			console.log("terminal" + d);
-			lex._next(d);
-		break;
-	
-	}
-}
-
 function token_region() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	switch(lex.pattern) {
 		case 'TOKEN_REGION':
 			console.log("TOKEN_REGION");
-			lex._next(d);
+			lex.nextToken();
 
 			expect(LBRACE);
 
+			do {
+				token_expression();
+			} while(!accept(RBRACE));
+
+		break;
+		default:
+			// empty string
+	}
+}
+
+function token_expression() {
+	var d = lex.lookahead();
+	switch(lex.pattern) {
+		case 'IDENTIFIER':
 			do {
 				token_name();
 				expect(COLON);
 				token_regular();
 			} while(accept(COMMA));
-			
-			expect(RBRACE);
-
 		break;
+		default:
+			error_msg();
 	}
+	
 }
 
 function token_name() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 
 	switch(lex.pattern) {
 		case 'IDENTIFIER':
 			console.log("TOKEN_NAME");
-			lex._next(d);
+			lex.nextToken();
 		break;
+		default:
+			error_msg();
 	}
-
-	return true;
 }
 
 function token_regular() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	switch(lex.pattern) {
-		case 'TOKEN_REGULAR':console.log(d);
-			console.log("TOKEN_REGULAR");
-			lex._next(d);
+		case 'TOKEN_REGULAR':
+			console.log("TOKEN_REGULAR: " + d);
+			lex.nextToken();
 		break;
+		default:
+			error_msg();
 	}
-
-	return true;
 }
 
+function bnf_region() {
+	var d = lex.lookahead();
+	switch(lex.pattern) {
+		case 'GRAMMAR_REGION':
+			console.log(d);
+			lex.nextToken();
+			
+			expect(LBRACE);
+			
+			do {
+				bnf_expression();
+			} while(!accept(RBRACE));
+			
+		break;
+		default:
+			// empty string
+	}
+}
 
+function bnf_expression() {
+	var d = lex.lookahead();
+	switch(lex.pattern) {
+		case 'NONTERMINAL' : 
+			console.log("symbol: " + d);
+			lex.nextToken();
+			
+			expect(COLON);
+			bnf_rule();
+			expect(SEMICOLON);
+	
+		break;
+		default:
+			// empty string
+		
+	}
+}
+
+function bnf_rule() {
+	var d = lex.lookahead();
+	switch(lex.pattern) {
+		case 'NONTERMINAL':
+		case 'TERMINAL' :
+		case 'EPSILON':
+		case 'ALTER':
+			bnf_element();
+			bnf_zeorOrMore();
+			bnf_rule();
+		break;
+		default:
+			// empty string
+	}
+}
+
+function bnf_element() {
+	var d = lex.lookahead();
+	switch(lex.pattern) {
+		case 'NONTERMINAL':
+			console.log("nonterminal: " + d);
+			lex.nextToken();
+		break;
+		case 'TERMINAL' :
+			console.log("terminal: " + d);
+			lex.nextToken();
+		break;
+		case 'ALTER':
+			console.log("alter: |");
+			lex.nextToken();
+		break;
+		case 'EPSILON':
+			console.log("ε-move: " + d);
+			lex.nextToken();
+		break;
+		default:
+			error_msg();	
+	}
+}
+
+function bnf_zeorOrMore() {
+	var d = lex.lookahead();
+	switch(lex.pattern) {
+		case 'LBRACKET':
+			console.log("LBRACKET");
+			lex.nextToken();
+
+			do {
+				bnf_element();
+			} while(!accept(RBRACKET));
+
+		break;
+		default:
+			// empty string
+		
+	}
+}
+
+/*	TOKENS	*/
 function ASSIGN() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	if(lex.pattern == 'ASSIGN') {
-		console.log('ASSIGN ' + "=");
-		lex._next(d);
+		console.log('ASSIGN ' + d);
+		//lex.nextToken();
 		return true;
 	}
 
@@ -151,32 +213,10 @@ function ASSIGN() {
 }
 
 function IDENTIFIER() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	if(lex.pattern == 'IDENTIFIER') {
 		console.log('ID : ' + d);
-		lex._next(d);
-		return true;
-	}
-
-	return false;
-}
-
-function NUMBER(t) {
-	var d = lex._scan();
-	if(lex.pattern == 'NUMBER') {
-		console.log('NUM : ' + d);
-		lex._next(d);
-		return;
-	}
-
-	error_msg();
-}
-
-function NULL(t) {
-	var d = lex._scan();
-	if(lex.pattern == 'NULL') {
-		console.log('NULL');
-		lex._next(d);
+		//lex.nextToken();
 		return true;
 	}
 
@@ -184,10 +224,10 @@ function NULL(t) {
 }
 
 function SEMICOLON() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	if(lex.pattern == 'SEMICOLON') {
 		console.log('SEMICOLON');
-		lex._next(d);
+		//lex.nextToken();
 		return true;
 	}
 
@@ -195,10 +235,10 @@ function SEMICOLON() {
 }
 
 function COMMA() {
-	var d = lex._scan(); 
+	var d = lex.lookahead(); 
 	if(lex.pattern == 'COMMA') {
 		console.log('COMMA');
-		lex._next(d);
+		//lex.nextToken();
 		return true;
 	}
 
@@ -206,10 +246,10 @@ function COMMA() {
 }
 
 function COLON() {
-	var d = lex._scan(); 
+	var d = lex.lookahead(); 
 	if(lex.pattern == 'COLON') {
 		console.log('COLON');
-		lex._next(d);
+		//lex.nextToken();
 		return true;
 	}
 
@@ -217,10 +257,10 @@ function COLON() {
 }
 
 function LBRACE() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	if(lex.pattern == 'LBRACE') {
 		console.log('LBRACE');
-		lex._next(d);
+		//lex.nextToken();
 		return true;
 	}
 
@@ -228,10 +268,32 @@ function LBRACE() {
 }
 
 function RBRACE() {
-	var d = lex._scan();
+	var d = lex.lookahead();
 	if(lex.pattern == 'RBRACE') {
 		console.log('RBRACE');
-		lex._next(d);
+		//lex.nextToken();
+		return true;
+	}
+
+	return false;	
+}
+
+function LBRACKET() {
+	var d = lex.lookahead();
+	if(lex.pattern == 'LBRACKET') {
+		console.log('LBRACKET');
+		//lex.nextToken();
+		return true;
+	}
+
+	return false;	
+}
+
+function RBRACKET() {
+	var d = lex.lookahead();
+	if(lex.pattern == 'RBRACKET') {
+		console.log('RBRACKET');
+		//lex.nextToken();
 		return true;
 	}
 

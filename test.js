@@ -1,6 +1,15 @@
-%token
+%token 
 {
-	XDD: /XDD/, NANI : /NANI/
+	XDD: /XDD/, 
+	NANI : /NANI/
+}
+
+%grammar
+{
+
+<start> : <expression> <haha>;
+<expression> : <var> <nani>;
+
 }
 
 var a = NULL;

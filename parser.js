@@ -1,8 +1,8 @@
 var	fs = require("fs"),
 	path = require('path'),
 	util = require('util'),
-	lex = require('./lex.js'),
-	syntax;
+	lex = require('./lex.js')
+	;
 
 
 module.exports = {
@@ -18,19 +18,78 @@ module.exports = {
 function expect(symbol) {
 	if(symbol()) {
 		return true;
+	} else {
+		error_msg();
+		return false;
 	}
-	error_msg();
-	return false;
+}
+
+function accept(symbol) {
+	if(symbol()) {
+		return true;
+	} else {
+		return false;	
+	}
 }
 
 function error_msg() {
 	console.log("line " + lex.linenum + " : syntax error");
-	//process.exit();
+	process.exit();
 }
 
 function start() {
 	token_region();
-	/*declare();*/
+	bnf_region();
+}
+
+function bnf_region() {
+	var d = lex._scan();
+	switch(lex.pattern) {
+		case 'GRAMMAR_REGION':
+			console.log("symbol" + d);
+			lex._next(d);
+			
+			expect(LBRACE);
+			
+			do {
+				bnf_expression();
+
+			} while(!accept(RBRACE));
+			
+		break;
+	}
+}
+
+function bnf_expression() {
+	var d = lex._scan();console.log(lex.pattern);
+	switch(lex.pattern) {
+		case 'NONTERMINAL' : 
+			console.log("symbol: " + d);
+			lex._next(d);
+			
+			expect(COLON);
+			
+			do {
+				bnf_rule();
+			} while(!accept(SEMICOLON));
+			
+		break;
+	}
+}
+
+function bnf_rule() {
+	var d = lex._scan();
+	switch(lex.pattern) {
+		case 'NONTERMINAL':
+			console.log("nonterminal" + d);
+			lex._next(d);
+		break;
+		case 'TERMINAL' :
+			console.log("terminal" + d);
+			lex._next(d);
+		break;
+	
+	}
 }
 
 function token_region() {
@@ -46,13 +105,10 @@ function token_region() {
 				token_name();
 				expect(COLON);
 				token_regular();
-			} while(COMMA());
+			} while(accept(COMMA));
 			
 			expect(RBRACE);
 
-			
-
-			console.log("XD");
 		break;
 	}
 }
@@ -61,7 +117,7 @@ function token_name() {
 	var d = lex._scan();
 
 	switch(lex.pattern) {
-		case 'TOKEN_NAME':
+		case 'IDENTIFIER':
 			console.log("TOKEN_NAME");
 			lex._next(d);
 		break;
@@ -82,109 +138,27 @@ function token_regular() {
 	return true;
 }
 
-function declare() {
-	var d = lex._scan();
-	console.log(d);
-	switch(lex.pattern) {
-		case 'VAR':
-			VAR(); assign_form(); SEMICOLON();
-			declare();
-		break;
 
-		default:
-			return;
-		break;
-	}
-}
-
-function assign_form() {
-	var d = lex._scan();
-	switch(lex.pattern) {
-		case 'IDENTIFIER':
-			IDENTIFIER();
-			
-			lex._scan();
-			if(lex.pattern == 'ASSIGN') {
-					ASSIGN(); type();
-			}
-
-			assign_list();
-		break;
-
-		default:
-			error_msg();
-		break;
-	}
-}
-
-function assign_list() {
-	var d = lex._scan();
-	switch(lex.pattern) {
-		case 'COMMA':
-			COMMA();
-			assign_form();
-		break;
-
-		default:
-			return;
-		break;
-	}
-}
-
-
-function type() {
-	var d = lex._scan();
-	switch(lex.pattern) {
-		case 'IDENTIFIER':
-			IDENTIFIER();
-		break;
-
-		case 'NUMBER':
-			NUMBER();
-		break;
-
-		case 'NULL':
-			NULL();
-		break;
-
-		default:
-			error_msg();
-		break;
-	}
-}
-
-function VAR(t) {
-	var d = lex._scan();
-
-	if(lex.pattern == 'VAR') {
-		console.log('VAR ' + d);
-		lex._next(d);
-		return;
-	}
-
-	error_msg();
-}
-
-function ASSIGN(t) {
+function ASSIGN() {
 	var d = lex._scan();
 	if(lex.pattern == 'ASSIGN') {
 		console.log('ASSIGN ' + "=");
 		lex._next(d);
-		return;
+		return true;
 	}
 
-	error_msg();
+	return false;
 }
 
-function IDENTIFIER(t) {
+function IDENTIFIER() {
 	var d = lex._scan();
 	if(lex.pattern == 'IDENTIFIER') {
 		console.log('ID : ' + d);
 		lex._next(d);
-		return;
+		return true;
 	}
 
-	error_msg();
+	return false;
 }
 
 function NUMBER(t) {
@@ -203,10 +177,10 @@ function NULL(t) {
 	if(lex.pattern == 'NULL') {
 		console.log('NULL');
 		lex._next(d);
-		return;
+		return true;
 	}
 
-	error_msg();
+	return false;
 }
 
 function SEMICOLON() {

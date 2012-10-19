@@ -20,11 +20,14 @@ module.exports = {
 		'PERIOD' : '\\.',
 		
 		'NUMBER' : '\\d+',
-	/*	'IDENTIFIER' : "\\w+",*/
+		'IDENTIFIER' : "\\w+",
 
+		'GRAMMAR_REGION' : "%grammar",
+		'NONTERMINAL' : "<\\w+>",
+		'TERMINAL' : '"\\w+"',
+		
 
 		'TOKEN_REGION' : "%token",
-		'TOKEN_NAME' : "\\w+",
 		'TOKEN_REGULAR' : '/[^/]*/'
 
 

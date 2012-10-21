@@ -15,8 +15,12 @@ module.exports = {
 	}
 };
 
-function error_msg() {
-	console.log("line " + lex.linenum + " : syntax error");
+function error_msg(msg) {
+	if(msg == undefined) {
+		console.log("line " + lex.linenum + " : syntax error");
+	} else {
+		console.log("line " + lex.linenum + " : " + msg);
+	}
 	process.exit();
 }
 
@@ -25,7 +29,7 @@ function expect(symbol) {
 		lex.nextToken();
 		return true;
 	} else {
-		error_msg();
+		error_msg("Unrecongnized token");
 		return false;
 	}
 }
@@ -75,7 +79,7 @@ function token_expression() {
 			} while(accept(COMMA));
 		break;
 		default:
-			error_msg();
+			error_msg("using> IDENTIFIER: /regular expression/");
 	}
 	
 }
@@ -89,7 +93,7 @@ function token_name() {
 			lex.nextToken();
 		break;
 		default:
-			error_msg();
+			error_msg("\tHere need a token name.\n\t\tusing> IDENTIFIER: /regular expression/");
 	}
 }
 
@@ -101,7 +105,7 @@ function token_regular() {
 			lex.nextToken();
 		break;
 		default:
-			error_msg();
+			error_msg("\tHere need a regular expression.\n\t\tusing> IDENTIFIER: /regular expression/");
 	}
 }
 
@@ -133,11 +137,11 @@ function bnf_expression() {
 			
 			expect(COLON);
 			bnf_rule();
-			expect(SEMICOLON);
+			//expect(SEMICOLON);
 	
 		break;
 		default:
-			// empty string
+			error_msg("\tHere need a BNF.\n\t\tusing> <symbol> : BNF-expression ;");
 		
 	}
 }
@@ -149,12 +153,16 @@ function bnf_rule() {
 		case 'TERMINAL' :
 		case 'EPSILON':
 		case 'ALTER':
-			bnf_element();
-			bnf_zeorOrMore();
-			bnf_rule();
+			
+			do {
+				bnf_element();
+				bnf_zeorOrMore();
+			} while(!accept(SEMICOLON));
+
 		break;
+
 		default:
-			// empty string
+			error_msg("\tHere need a BNF.\n\t\tusing> <symbol> : BNF-expression ;");
 	}
 }
 
@@ -178,7 +186,7 @@ function bnf_element() {
 			lex.nextToken();
 		break;
 		default:
-			error_msg();	
+			error_msg("\tHere need a BNF.\n\t\tusing> <symbol> : BNF-expression ;");
 	}
 }
 

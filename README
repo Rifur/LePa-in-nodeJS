@@ -1,42 +1,41 @@
-LePa in nodeJS: An simple lexer and parser in nodejs
-[DIY Compiler Front End - prototype]
+An simple lexer and parser in nodejs. 
 author: Rifur Ni, <Rifurdoma at gmail.com>
 
 This program is written in node.js.
 Usage: $nodejs main.js <source-code>
 
-For example, we have test.js, contains very simple statements, can be parsed by those production rules:
+OUR GOAL: Read in a text file which describe BNF and tokens with our form, then translate to recursive descent parser.
 
-	start	: VAR assign_form SEMICOLON
-		;
 
-	assign_form	: IDENTIFIER assign_list
-			| IDENTIFIER ASSIGN TYPE assign_list
-			;
+SYNTAX FORM:
+In test.js, there is described our token and BNF's form.
 
-	assign_list	: COMMA assign_form
-			;
+	%token
+	{
+		IDENTIFIER1 : /regular expression 1/, 
+		IDENTIFIER1 : /regular expression 2/
+	}
 
-which is implemented in parser.js.
+	%grammar
+	{
+		<symbol> : <nonterminal> "terminal" [<symbol> "terminal"] ;
+	}
 
-The main.js is the entry of program. It read in <source-code> file as string given by argument, and send <source-code> into lexical analyzer by lex.input() method:
 
-	 var lex = require('./lex.js');
-		// ...
-	>lex.input(<source-code>);
+which is implemented a recursive descent parser in parser.js by hand.
 
-where lex.js is the implementation of lexical analyzer. Now, running syntax anaylzer:
+DESCIRIPION: 
+The main.js is the entry of program. It reads in <source-code> file as string given by argument. We need to include lex.js and parser.js which are lexical analyzer and syntax analyzer respectively. We send <source-code> into lexical analyzer by lex.input() method:
 
 	 var lex = require('./lex.js');
 	 var parser = require('./parser.js');
 		// ...
+	>lex.input(<source-code>);
+	 parser.parse();
+
+and running syntax anaylzer:
+
 	 lex.input(<source-code>);
 	>parser.parse();
 
-Tokes and their regular expression are defined in token.js. In default, if we just want to run lexical analyzer to check whether the definitions of tokens are correct or not, we use
-
-	 lex.input(<source-code>);
-	>lex.lex();
-
-to do it.
 Have fun :D

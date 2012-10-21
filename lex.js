@@ -66,6 +66,7 @@ module.exports = {
 			}
 		}
 
+		self.pattern = '';
 		return '';
 	},
 

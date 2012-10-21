@@ -18,12 +18,11 @@
 <token_regular> : "TOKEN_REGULAR" ;
 
 <bnf_region> : "%grammar" "{" [<bnf_expression>] "}" | ε ;
-<bnf_expression> : <nonterminal> ":" <bnf_rule> ";" ;
-<bnf_rule> : <bnf_element> <bnf_zeroOrMore> <bnf_rule> | ε ;
+<bnf_expression> : <nonterminal> ":" <bnf_rule> ;
+<bnf_rule> : <bnf_element> <bnf_zeroOrMore> [<bnf_rule>] ";" ;
 <bnf_element> : <nonterminal> | <terminal> | "ALTER" | "EPSILON" ;
 <bnf_zeroOrMore> : "[" <bnf_element> "]" | ε ;
 
 <terminal> : "TERMINAL" ;
 <nonterminal> : "NONTERMINAL";
-
 }

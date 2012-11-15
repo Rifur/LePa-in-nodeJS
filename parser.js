@@ -1,13 +1,11 @@
 var	fs = require("fs"),
 	path = require('path'),
 	util = require('util'),
-	lex = require('./lex.js'),
-	ll_ds = require('./linklist.js'),
-	LLToken = new ll_ds.linklist(),
-	LLSyntax = new ll_ds.linklist()
+	lex = require('./lex.js')
 	;
 
-
+eval(fs.readFileSync('linklist.js', 'utf8')); 
+LLToken = new linklist();
 
 module.exports = {
 	input : function(s) {
@@ -51,6 +49,7 @@ function accept(symbol) {
 function start() {
 	token_region();
 	LLToken.travel();
+
 	bnf_region();
 }
 
@@ -85,7 +84,7 @@ function token_expression() {
 				expect(COLON);
 				tokenReg = token_regular();
 
-				LLToken.append(new ll_ds.llNode(ll_ds.ATOM_TYPE, new Array(tokenName, tokenReg)));
+				LLToken.append(new llNode(ATOM_TYPE, new Array(tokenName, tokenReg)));
 
 			} while(accept(COMMA));
 		break;

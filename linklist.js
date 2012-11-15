@@ -1,10 +1,7 @@
 const ATOM_TYPE = 1;
 const LIST_TYPE = 2;
 
-exports.ATOM_TYPE = ATOM_TYPE;
-exports.LIST_TYPE = LIST_TYPE;
-
-exports.llNode = function(whatType, value) {
+llNode = function(whatType, value) {
 	return {
 		type: whatType,
 		key: value,
@@ -13,13 +10,13 @@ exports.llNode = function(whatType, value) {
 	};
 };
 
-exports.linklist = function () {};
-exports.linklist.prototype = {
+linklist = function() {}
+linklist.prototype = {
 	head: null,
 	tail: null
 };
 
-exports.linklist.prototype.append = function(node) {
+linklist.prototype.append = function(node) {
 	if(this.head == null) {
 		this.head = node;
 		this.tail = this.head;
@@ -30,7 +27,8 @@ exports.linklist.prototype.append = function(node) {
 	}
 };
 
-exports.linklist.prototype.travel = function(current, parent) {
+linklist.prototype.travel = function(current, parent) {
+
 	if(current == null) {
 		if(parent == null) {
 			current = this.head;
@@ -45,25 +43,23 @@ exports.linklist.prototype.travel = function(current, parent) {
 	case ATOM_TYPE: 
 		{
 			console.log(current.key);
-			parent = current;
-			current = current.next;
 		}
 	break;
 	case LIST_TYPE:
 		{
 			current.key.travel();
-			parent = current;
-			current = current.next;
 		}
 	break;
 	}
+
+	parent = current;
+	current = current.next;
 
 	this.travel(current, parent);
 
 };
 
-function linklistTest()
-{
+linklist.prototype.linklistTest = function() {
 	var L1 = new linklist();
 	var L2 = new linklist();
 	var L3 = new linklist();
@@ -82,5 +78,5 @@ function linklistTest()
 	L2.append(new llNode(LIST_TYPE, L1));
 
 	L2.travel();
-}
 
+};

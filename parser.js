@@ -1,8 +1,12 @@
 var	fs = require("fs"),
 	path = require('path'),
 	util = require('util'),
-	lex = require('./lex.js')
+	lex = require('./lex.js'),
+	ll_ds = require('./linklist.js'),
+	LLToken = new ll_ds.linklist(),
+	LLSyntax = new ll_ds.linklist()
 	;
+
 
 
 module.exports = {
@@ -46,6 +50,7 @@ function accept(symbol) {
 /*	SYNTEX	*/
 function start() {
 	token_region();
+	LLToken.travel();
 	bnf_region();
 }
 
@@ -53,6 +58,7 @@ function token_region() {
 	var d = lex.lookahead();
 	switch(lex.pattern) {
 		case 'TOKEN_REGION':
+
 			console.log("TOKEN_REGION");
 			lex.nextToken();
 
@@ -60,6 +66,7 @@ function token_region() {
 
 			do {
 				token_expression();
+
 			} while(!accept(RBRACE));
 
 		break;
@@ -70,12 +77,16 @@ function token_region() {
 
 function token_expression() {
 	var d = lex.lookahead();
+	var tokenName, tokenReg;
 	switch(lex.pattern) {
 		case 'IDENTIFIER':
 			do {
-				token_name();
+				tokenName = token_name();
 				expect(COLON);
-				token_regular();
+				tokenReg = token_regular();
+
+				LLToken.append(new ll_ds.llNode(ll_ds.ATOM_TYPE, new Array(tokenName, tokenReg)));
+
 			} while(accept(COMMA));
 		break;
 		default:
@@ -89,8 +100,11 @@ function token_name() {
 
 	switch(lex.pattern) {
 		case 'IDENTIFIER':
-			console.log("TOKEN_NAME");
+			console.log("TOKEN_NAME: " + d);
 			lex.nextToken();
+			
+			return d;
+
 		break;
 		default:
 			error_msg("\tHere need a token name.\n\t\tusing> IDENTIFIER: /regular expression/");
@@ -101,8 +115,12 @@ function token_regular() {
 	var d = lex.lookahead();
 	switch(lex.pattern) {
 		case 'TOKEN_REGULAR':
+			d = d.substring(1, d.length-1);
 			console.log("TOKEN_REGULAR: " + d);
 			lex.nextToken();
+			
+			return d;
+
 		break;
 		default:
 			error_msg("\tHere need a regular expression.\n\t\tusing> IDENTIFIER: /regular expression/");

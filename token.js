@@ -33,7 +33,6 @@ module.exports = {
 
 		'EPSILON' : 'ε'
 
-
 	},
 
 	ignore : {

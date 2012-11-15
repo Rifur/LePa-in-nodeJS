@@ -48,9 +48,9 @@ function accept(symbol) {
 /*	SYNTEX	*/
 function start() {
 	token_region();
-	LLToken.travel();
-
 	bnf_region();
+
+	LLToken.travel();
 }
 
 function token_region() {
@@ -165,9 +165,11 @@ function bnf_expression() {
 
 function bnf_rule() {
 	var d = lex.lookahead();
+
 	switch(lex.pattern) {
 		case 'NONTERMINAL':
-		case 'TERMINAL' :
+		case 'IDENTIFIER' :
+		case 'TERMINAL':
 		case 'EPSILON':
 		case 'ALTER':
 			
@@ -190,8 +192,17 @@ function bnf_element() {
 			console.log("nonterminal: " + d);
 			lex.nextToken();
 		break;
+		case 'IDENTIFIER':
+			console.log("defined terminal: " + d);
+			lex.nextToken();
+		break;
 		case 'TERMINAL' :
 			console.log("terminal: " + d);
+			d = d.substring(1, d.length-1);
+			if(!LLToken.search(new Array(d, d))) {
+				LLToken.append(new llNode(ATOM_TYPE, new Array(d, d)));
+			}
+			
 			lex.nextToken();
 		break;
 		case 'ALTER':

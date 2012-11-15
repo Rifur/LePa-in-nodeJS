@@ -27,36 +27,49 @@ linklist.prototype.append = function(node) {
 	}
 };
 
-linklist.prototype.travel = function(current, parent) {
+linklist.prototype.travel = function() {
+	
+	var ary = this.toArray();
+	for(var i=0; i<ary.length; ++i) {
+		console.log(ary[i]);
+	}
+
+};
+
+linklist.prototype.search = function(value) {
+	var ary = this.toArray();
+	value = value.toString();
+
+	for(var i=0; i<ary.length; ++i) {
+		if(ary[i].toString() == value) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+linklist.prototype.toArray = function(current) {
+	var ary = new Array();
 
 	if(current == null) {
-		if(parent == null) {
-			current = this.head;
-		} else {
-			return;
-		}
-	} else if(current == parent) {
-		return;
+		current = this.head;
 	}
 
-	switch(current.type) {
-	case ATOM_TYPE: 
-		{
-			console.log(current.key);
+	while(current != null) {
+		switch(current.type) {
+			case ATOM_TYPE:
+				ary.push(current.key);
+			break;
+			case LIST_TYPE:
+				ary = ary.concat(current.key.toArray());
+			break;
 		}
-	break;
-	case LIST_TYPE:
-		{
-			current.key.travel();
-		}
-	break;
+
+		current = current.next;
 	}
 
-	parent = current;
-	current = current.next;
-
-	this.travel(current, parent);
-
+	return ary;
 };
 
 linklist.prototype.linklistTest = function() {
@@ -70,13 +83,16 @@ linklist.prototype.linklistTest = function() {
 	L2.append(new llNode(ATOM_TYPE, 3));
 	L2.append(new llNode(ATOM_TYPE, 2));
 
-	L2.append(new llNode(LIST_TYPE, L3));
+	L2.append(new llNode(LIST_TYPE, L1));
 
 	L3.append(new llNode(ATOM_TYPE, 1));
 	L3.append(new llNode(ATOM_TYPE, 0));
 
-	L2.append(new llNode(LIST_TYPE, L1));
+	L2.append(new llNode(LIST_TYPE, L3));
 
 	L2.travel();
 
 };
+/*
+var a = new linklist;
+a.linklistTest();*/

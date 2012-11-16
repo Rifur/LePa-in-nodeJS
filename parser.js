@@ -198,6 +198,7 @@ function bnf_element() {
 		break;
 		case 'TERMINAL' :
 			console.log("terminal: " + d);
+			
 			d = d.substring(1, d.length-1);
 			if(!LLToken.search(new Array(d, d))) {
 				LLToken.append(new llNode(ATOM_TYPE, new Array(d, d)));

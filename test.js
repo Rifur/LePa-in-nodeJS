@@ -4,7 +4,7 @@
 	TOKEN_REGULAR : //.*//	,
 	TERMINAL : /"\S+"/	,
 	NONTERMINAL : /<\w+>/	,
-	ALTER : /|/		,
+	ALTER : /\|/		,
 	EPSILON : /ε/
 }	
 
@@ -21,7 +21,7 @@
 <bnf_expression> : <nonterminal> ":" <bnf_rule> ;
 <bnf_rule> : <bnf_element> <bnf_zeroOrMore> [<bnf_rule>] ";" ;
 <bnf_element> : <nonterminal> | IDENTIFIER | <terminal> | ALTER | EPSILON ;
-<bnf_zeroOrMore> : "[" <bnf_element> "]" | ε ;
+<bnf_zeroOrMore> : "\[" <bnf_element> "\]" | ε ;
 
 <terminal> : TERMINAL ;
 <nonterminal> : NONTERMINAL ;

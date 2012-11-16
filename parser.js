@@ -45,12 +45,28 @@ function accept(symbol) {
 	}
 }
 
+/*	TOKEN	*/	// TODO
+function testToken() {
+
+	var str = '<start>';
+	var ary = LLToken.toArray();
+	for(var i in ary) {
+		var h = str.match(new RegExp('^' + ary[i].key[1]));
+		if(h != null) {
+			console.log(str + ' MATCH! ' + ary[i].key[0]);
+			break;
+		}
+	}
+}
+
 /*	SYNTEX	*/
 function start() {
 	token_region();
 	bnf_region();
 
 	LLToken.travel();
+	testToken();
+	
 }
 
 function token_region() {
@@ -198,7 +214,7 @@ function bnf_element() {
 		break;
 		case 'TERMINAL' :
 			console.log("terminal: " + d);
-			
+
 			d = d.substring(1, d.length-1);
 			if(!LLToken.search(new Array(d, d))) {
 				LLToken.append(new llNode(ATOM_TYPE, new Array(d, d)));
